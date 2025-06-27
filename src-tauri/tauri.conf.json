@@ -1,0 +1,47 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "back-manage-system",
+  "version": "0.1.0",
+  "identifier": "com.back-manage-system.app",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "壹零贰肆后台管理系统",
+        "width": 1620,
+        "height": 1080,
+        "decorations": true,
+        "resizable": false,
+        "center": true,
+        "fullscreen": false,
+        "visible": true,
+        "alwaysOnTop": false,
+        "maximizable": false,
+        "minimizable": false,
+        "maxWidth": 1620,
+        "maxHeight": 1080,
+        "minWidth": 1620,
+        "minHeight": 1080
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}
