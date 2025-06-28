@@ -5,6 +5,7 @@ import { Motion } from 'motion-v';
 import { House, Folder, User, Money, VideoCamera, DataBoard } from '@element-plus/icons-vue';
 import { eventBus } from '../../Utils/EventBus';
 import { permissionBgColor, projectStatusColor } from "./Config";
+import AnimationNumberText from "../../Components/AnimationNumberText/AnimationNumberText.vue";
 
 const tabList = ref<TabItem[]>([
     {
@@ -188,6 +189,8 @@ onMounted(() => {
                 </Motion>
             </div>
         </div>
-        <div class="tab-foot"></div>
+        <div class="tab-foot">
+            <AnimationNumberText :value="100" style="font-size: 14px; color: #fff; margin-right: 10px;" />
+        </div>
     </div>
 </template>

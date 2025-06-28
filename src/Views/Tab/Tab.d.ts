@@ -1,13 +1,13 @@
+interface TabChild {
+    title: string;
+    status: string;
+}
+
 interface TabItem {
     title: string;
     fold: boolean;
     icon: any;
     children: TabChild[];
-}
-
-interface TabChild {
-    title: string;
-    status: string;
 }
 
 interface PSC {
