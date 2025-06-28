@@ -1,26 +1,30 @@
 <template>
     <div class="popcontainer">
-        <div v-show="visible" @click.self="closePopup()"
+        <Motion v-show="visible" :initial="{ opacity: 0 }" :animate="{ opacity: 1 }" :exit="{ opacity: 0 }"
+            :transition="{ duration: 0.3, ease: 'easeInOut' }" @click.self="closePopup()"
             :style="{ zIndex: (style?.zIndex ?? 1000), position: 'fixed', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(24, 24, 24, 0.52)', display: 'flex', justifyContent: 'center', alignItems: 'center' }">
-            <div class="main" :style="{
-                width: '80%',
-                height: '80%',
-                backgroundColor: '#36373A',
-                borderRadius: '12px',
-                padding: '20px',
-                boxSizing: 'border-box',
-                zIndex: (style?.zIndex ?? 1000) + 1,
-                ...style,
-            }">
+            <Motion :initial="{ opacity: 0, y: 60, scale: 0.9 }" :animate="{ opacity: 1, y: 0, scale: 1 }"
+                :exit="{ opacity: 0, y: 60, scale: 0.9 }" :transition="{ duration: 0.3, ease: 'easeInOut' }"
+                class="main" :style="{
+                    width: '80%',
+                    height: '80%',
+                    backgroundColor: '#36373A',
+                    borderRadius: '12px',
+                    padding: '20px',
+                    boxSizing: 'border-box',
+                    zIndex: (style?.zIndex ?? 1000) + 1,
+                    ...style,
+                }">
                 <slot></slot>
-            </div>
-        </div>
+            </Motion>
+        </Motion>
     </div>
 </template>
 
 <script setup>
 import { defineProps, ref } from "vue"
 import { CloseBold } from "@element-plus/icons-vue"
+import { Motion } from "motion-v"
 
 const showDriverDetail = ref(false)
 const propData = ref({})
