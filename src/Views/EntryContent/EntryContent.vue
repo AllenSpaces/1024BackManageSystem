@@ -16,8 +16,7 @@ onMounted(() => {
         tabName.value = ''
         childName.value = child;
     })
-    
-    // 初始化时显示Home页面
+
     tabName.value = 'Home';
 })
 </script>
