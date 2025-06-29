@@ -1,13 +1,6 @@
 import { createApp, h, ref } from "vue"
 import Popup from "./Popup.vue"
 
-type PopupInstance = {
-  id: string
-  app: any
-  vm: HTMLDivElement
-  level: number
-}
-
 const popupManager = {
   instances: ref<PopupInstance[]>([]),
   currentLevel: 0,
@@ -20,34 +13,28 @@ const popupManager = {
     const id = this.generateId()
     const level = ++this.currentLevel
 
+
     const vm = document.createElement("div")
     vm.id = id
     vm.style.zIndex = String(1000 + level)
     document.body.appendChild(vm)
 
-    const app = createApp({
-      render() {
-        return h(
-          Popup,
-          {
-            id,
-            visible: true,
-            style,
-            showCloseBtn,
-            level,
-            "onUpdate:visible": (val: any) => {
-              if (!val) this.close(id)
-            },
-            closePopup: () => {
-              popupManager.close(id)
-            },
+    const app = createApp(
+      () => h(
+        Popup,
+        {
+          visible: true,
+          style,
+          showCloseBtn,
+          closePopup: () => {
+            this.close(id)
           },
-          {
-            default: () => h(component, props),
-          },
-        )
-      },
-    }).mount(vm)
+        },
+        {
+          default: () => h(component, props),
+        },
+      )
+    ).mount(vm)
 
     const instance = { id, app, vm, level }
     this.instances.value.push(instance)
@@ -64,15 +51,7 @@ const popupManager = {
 
       this.instances.value.splice(index, 1)
     }
-  },
-
-  closeAll() {
-    this.instances.value.forEach((instance) => {
-      document.body.removeChild(instance.vm)
-    })
-    this.instances.value = []
-    this.currentLevel = 0
-  },
+  }
 }
 
 export default {

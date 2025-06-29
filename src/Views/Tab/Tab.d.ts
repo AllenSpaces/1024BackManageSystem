@@ -1,4 +1,5 @@
 interface TabChild {
+    id: number;
     title: string;
     status: string;
 }

@@ -1,5 +1,6 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import OpenPopup from "./Globals/Popup/OpenPopup";
+import PopupHook from "./Globals/Popup/PopupHook";
 
-createApp(App).use(OpenPopup).mount("#app");
+
+createApp(App).use(PopupHook).mount("#app");

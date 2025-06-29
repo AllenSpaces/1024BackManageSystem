@@ -20,14 +20,17 @@ const tabList = ref<TabItem[]>([
         icon: markRaw(Folder),
         children: [
             {
+                id: 1,
                 title: 'Project 1',
                 status: 'In Progress'
             },
             {
+                id: 2,
                 title: 'Project 2',
                 status: 'Pending'
             },
             {
+                id: 3,
                 title: 'Project 3',
                 status: 'Checking'
             }
@@ -60,10 +63,10 @@ const tabList = ref<TabItem[]>([
 ]);
 
 const selectedTab = ref<string>('Home');
-const selectedChild = ref<string>('');
+const projectId = ref<number | null>(null);
 
-const addingChildMap = ref<Record<string, boolean>>({});
-const newChildNameMap = ref<Record<string, string>>({});
+const addingProjectMap = ref<Record<string, boolean>>({});
+const newProjectNameMap = ref<Record<string, string>>({});
 
 const inputRefs = ref<Record<string, HTMLInputElement | null>>({});
 
@@ -76,19 +79,19 @@ const toggleFold = (tab: TabItem) => {
 const selectTab = (title: string) => {
     if (title == "Project") return;
     selectedTab.value = title;
-    selectedChild.value = '';
+    projectId.value = null;
     eventBus.emit("changeTab", title)
 };
 
-const selectChild = (childTitle: string) => {
+const selectProject = (id: number) => {
     selectedTab.value = ''
-    selectedChild.value = childTitle;
-    eventBus.emit("changeChild", childTitle)
+    projectId.value = id;
+    eventBus.emit("changeProject", id)
 };
 
-const showAddChildInput = (tab: TabItem) => {
-    addingChildMap.value[tab.title] = true;
-    newChildNameMap.value[tab.title] = '';
+const showAddProjectInput = (tab: TabItem) => {
+    addingProjectMap.value[tab.title] = true;
+    newProjectNameMap.value[tab.title] = '';
     nextTick(() => {
         if (inputRefs.value[tab.title]) {
             inputRefs.value[tab.title]?.focus();
@@ -96,26 +99,31 @@ const showAddChildInput = (tab: TabItem) => {
     });
 };
 
-const handleAddChildInput = (tab: TabItem) => {
-    const name = newChildNameMap.value[tab.title]?.trim();
+const handleAddProjectInput = (tab: TabItem) => {
+    const name = newProjectNameMap.value[tab.title]?.trim();
     if (name) {
         tab.children.push({
+            id: tab.children.length + 1,
             title: name,
             status: 'In Progress'
         });
-        addingChildMap.value[tab.title] = false;
-        newChildNameMap.value[tab.title] = '';
+        addingProjectMap.value[tab.title] = false;
+        newProjectNameMap.value[tab.title] = '';
     }
 };
 
-const cancelAddChild = (tab: TabItem) => {
-    addingChildMap.value[tab.title] = false;
-    newChildNameMap.value[tab.title] = '';
+const cancelAddProject = (tab: TabItem) => {
+    addingProjectMap.value[tab.title] = false;
+    newProjectNameMap.value[tab.title] = '';
+};
+
+const openPop = () => {
+    window.$popup.open({}, { component: AnimationNumberText, props: { value: 100, style: { fontSize: '14px', color: '#fff', marginRight: '10px' } } });
 };
 
 onMounted(() => {
     eventBus.emit("changeTab", selectedTab.value);
-    eventBus.emit("changeChild", selectedChild.value)
+    eventBus.emit("changeProject", projectId.value)
 });
 </script>
 
@@ -123,11 +131,12 @@ onMounted(() => {
     <div class="tab-container">
         <div class="tab-head">
             <div class="logo">
-                <img src="" alt="">
+                <img src="/src/Assets/logo.png" alt="">
             </div>
             <span>壹零贰肆</span>
             <div class="permission"
-                :style="{ backgroundColor: permissionBgColor.Super.bg, display: 'flex', justifyContent: 'center', alignContent: 'center', padding: '4px 6px', borderRadius: '5px' }">
+                :style="{ backgroundColor: permissionBgColor.Super.bg, display: 'flex', justifyContent: 'center', alignContent: 'center', padding: '4px 6px', borderRadius: '5px' }"
+                @click="openPop()">
                 <span :style="{ color: permissionBgColor.Super.text, fontSize: '12px' }">Super</span>
             </div>
         </div>
@@ -155,8 +164,8 @@ onMounted(() => {
                         :transition="{ duration: 0.3, ease: 'easeInOut' }" class="children-container">
                         <div class="children-list">
                             <div v-for="child in tab.children" :key="child.title" class="child-item"
-                                :class="{ 'active': selectedChild === child.title }"
-                                @click.stop="selectChild(child.title)">
+                                :class="{ 'active': projectId === child.id }"
+                                @click.stop="selectProject(child.id)">
                                 <Motion :initial="{ opacity: 0, x: -10 }" :animate="{ opacity: 1, x: 0 }"
                                     :transition="{ duration: 0.2, delay: tab.children.indexOf(child) * 0.05 }"
                                     class="child-content">
@@ -168,19 +177,19 @@ onMounted(() => {
                                 </Motion>
                             </div>
                             <div v-if="tab.title.startsWith('Project')">
-                                <Motion v-if="!addingChildMap[tab.title]" :initial="{ opacity: 0, y: -5 }"
+                                <Motion v-if="!addingProjectMap[tab.title]" :initial="{ opacity: 0, y: -5 }"
                                     :animate="{ opacity: 1, y: 0 }" :exit="{ opacity: 0, y: -5 }"
                                     :transition="{ duration: 0.2 }" class="child-item add-child"
-                                    @click.stop="showAddChildInput(tab)">
+                                    @click.stop="showAddProjectInput(tab)">
                                     <span class="child-title">+ Add New Project</span>
                                 </Motion>
                                 <Motion v-else :initial="{ opacity: 0, y: -5 }" :animate="{ opacity: 1, y: 0 }"
                                     :exit="{ opacity: 0, y: -5 }" class="child-item add-child-input"
                                     :transition="{ duration: 0.2 }">
-                                    <input v-model="newChildNameMap[tab.title]"
-                                        @keyup.enter="() => handleAddChildInput(tab)"
-                                        @keyup.esc="() => cancelAddChild(tab)" class="add-child-input-box"
-                                        @blur="cancelAddChild(tab)" placeholder="输入项目名称，回车确认"
+                                    <input v-model="newProjectNameMap[tab.title]"
+                                        @keyup.enter="() => handleAddProjectInput(tab)"
+                                        @keyup.esc="() => cancelAddProject(tab)" class="add-child-input-box"
+                                        @blur="cancelAddProject(tab)" placeholder="输入项目名称，回车确认"
                                         :ref="el => inputRefs[tab.title] = el as HTMLInputElement" />
                                 </Motion>
                             </div>
@@ -190,7 +199,7 @@ onMounted(() => {
             </div>
         </div>
         <div class="tab-foot">
-            <AnimationNumberText :value="100" style="font-size: 14px; color: #fff; margin-right: 10px;" />
+            <AnimationNumberText :value="100" style="font-size: 14px; color: #fff;" />
         </div>
     </div>
 </template>
